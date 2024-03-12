@@ -2,20 +2,28 @@ import Note from '../models/note.model';
 import Task from '../models/task.model';
 
 class NoteController {
-  async createNote(content:string) {
+  async createNote(content: string) {
     const note = new Note(content);
     const savedNote = await note.save(); // Save the note and get the returned value
     return savedNote;
   }
 
-  async getNote(id:string) {
+  async updateNote(id: string, content: string) {
     const note = await Note.findOne({ _id: id });
     if (!note) {
       throw new Error('Note not found');
     }
-    console.log(note);
+    note.content = content;
+    const savedNote = await note.save();
+    return savedNote;
+  }
+
+  async getNote(id: string) {
+    const note = await Note.findOne({ _id: id });
+    if (!note) {
+      throw new Error('Note not found');
+    }
     note.content = await this.handleComponentsOnContent(note.content);
-    console.log(note);
     return note;
   }
 
@@ -28,36 +36,33 @@ class NoteController {
     });
 
     const processedNotes = await Promise.all(promises);
-    console.log(processedNotes);
     return processedNotes;
   }
 
-  async handleComponentsOnContent(content:string) {
-    // Here we can add some logic to handle the content
-    // in Note there is a tags that look like this <componentName:{id}>
-    // We can replace this with the actual component
-    // For example <image:123> will be replaced with the actual image
-    // We can use a service to get the component and replace it
-    // Regular expression to match the component tags
+  async handleComponentsOnContent(content: string) {
     const componentRegex = /<(\w+):(\w+)>/g;
+    const matches = [...content.matchAll(componentRegex)];
+    let replacedString = content;
 
-    const replacedContent = await Promise.all(
-      Array.from(content.matchAll(componentRegex), async (match) => {
-        const [, componentName, componentId] = match;
-        console.log(`Getting component ${componentName} with id ${componentId}`);
+    for (const match of matches) {
+      const replacement = await this.getNoteReplacerStrWithComponentData(match[0], match[1], match[2]);
+      replacedString = replacedString.replace(match[0], replacement);
+    }
+    return replacedString;
+  }
 
-        switch (componentName?.toLowerCase()) {
-          case 'task':
-            const task = await Task.findOne({ _id: componentId });
-            console.log('task:', task);
-            return `<${componentName}:${componentId}:${task}>`;
-          default:
-            return 'fullMatch';
-        }
-      })
-    );
-    console.log(replacedContent);
-    return replacedContent.toString();
+  async getNoteReplacerStrWithComponentData(matchedString: string, componentName: string, componentId: string) {
+    try {
+      switch (componentName?.toLowerCase()) {
+        case 'task':
+          const task = await Task.findOne({ _id: componentId });
+          return `<${componentName}:${componentId}:${task}>`;
+        default:
+          return matchedString;
+      }
+    } catch (error) {
+      return matchedString;
+    }
   }
 }
 

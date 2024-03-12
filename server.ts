@@ -2,10 +2,10 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import routes from './routes';
-
-require('dotenv').config();
 import http from 'http';
 import cors from 'cors';
+
+require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
