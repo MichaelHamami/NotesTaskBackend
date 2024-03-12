@@ -1,10 +1,10 @@
-const express = require('express');
-const AuthController = require('../controllers/auth.controller');
-const authControllerInstance = new AuthController();
+import express,{Request,Response} from 'express';
+import AuthController from '../controllers/auth.controller';
 
+const authControllerInstance = new AuthController();
 const router = express.Router();
 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req:Request, res:Response) => {
   try {
     const { fingerPrint } = req.body;
     console.log('login called with ', fingerPrint);
@@ -14,11 +14,11 @@ router.post('/login', async (req, res) => {
     return res.json({ success: true, authToken: token });
   } catch (error) {
     console.log('error', error);
-    return res.status(400).send(error.message);
+    return res.status(400).send(error);
   }
 });
 
-router.post('/signup', async (req, res) => {
+router.post('/signup', async (req:Request, res:Response) => {
   try {
     const { fingerPrint } = req.body;
     console.log('signup called with ', fingerPrint);
@@ -28,8 +28,8 @@ router.post('/signup', async (req, res) => {
 
     return res.json({ success: true, authToken: token });
   } catch (error) {
-    return res.status(500).send(error.message);
+    return res.status(500).send(error);
   }
 });
 
-module.exports = router;
+export default router;
