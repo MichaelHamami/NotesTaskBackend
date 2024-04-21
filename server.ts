@@ -1,10 +1,10 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
-import routes from './routes';
+import routes from './src/routes';
 import http from 'http';
 import cors from 'cors';
-
+import { errorHandlerMiddleware } from './src/middlewares/errorHandler';
 require('dotenv').config();
 
 const app = express();
@@ -25,6 +25,7 @@ mongoose
 const clients = {};
 
 app.use('/api', routes);
+app.use(errorHandlerMiddleware);
 
 const port = process.env.PORT || 5005;
 

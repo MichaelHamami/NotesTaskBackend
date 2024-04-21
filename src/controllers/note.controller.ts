@@ -2,8 +2,16 @@ import Note from '../models/note.model';
 import Task from '../models/task.model';
 
 class NoteController {
+  async deleteNote(id: string) {
+    const deletedNote = await Note.findByIdAndDelete(id);
+    if (!deletedNote) {
+      throw new Error('Note not found');
+    }
+    return deletedNote;
+  }
+
   async createNote(content: string) {
-    const note = new Note(content);
+    const note = new Note({ content });
     const savedNote = await note.save(); // Save the note and get the returned value
     return savedNote;
   }
@@ -56,7 +64,7 @@ class NoteController {
       switch (componentName?.toLowerCase()) {
         case 'task':
           const task = await Task.findOne({ _id: componentId });
-          return `<${componentName}:${componentId}:${task}>`;
+          return `<${componentName}:${componentId}:${JSON.stringify(task.toJSON({ flattenObjectIds: true }))}>`;
         default:
           return matchedString;
       }
@@ -65,5 +73,4 @@ class NoteController {
     }
   }
 }
-
 export default NoteController;

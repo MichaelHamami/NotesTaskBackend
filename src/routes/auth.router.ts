@@ -1,10 +1,10 @@
-import express,{Request,Response} from 'express';
+import express, { Request, Response } from 'express';
 import AuthController from '../controllers/auth.controller';
 
 const authControllerInstance = new AuthController();
 const router = express.Router();
 
-router.post('/login', async (req:Request, res:Response) => {
+router.post('/login', async (req: Request, res: Response, next) => {
   try {
     const { fingerPrint } = req.body;
     console.log('login called with ', fingerPrint);
@@ -13,12 +13,11 @@ router.post('/login', async (req:Request, res:Response) => {
     res.cookie('token', token, { httpOnly: true });
     return res.json({ success: true, authToken: token });
   } catch (error) {
-    console.log('error', error);
-    return res.status(400).send(error);
+    next(error);
   }
 });
 
-router.post('/signup', async (req:Request, res:Response) => {
+router.post('/signup', async (req: Request, res: Response, next) => {
   try {
     const { fingerPrint } = req.body;
     console.log('signup called with ', fingerPrint);
@@ -28,7 +27,7 @@ router.post('/signup', async (req:Request, res:Response) => {
 
     return res.json({ success: true, authToken: token });
   } catch (error) {
-    return res.status(500).send(error);
+    next(error);
   }
 });
 
