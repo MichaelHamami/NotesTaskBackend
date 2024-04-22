@@ -7,6 +7,18 @@ export enum UnitType {
   gal = 4,
 }
 
+export type ProductModel = {
+  name: String;
+  unit_type: keyof UnitType;
+  quantity: Number;
+  current_quantity: Number;
+  category: String;
+  description: String;
+  bought: boolean;
+  price: Number;
+  image: String;
+};
+
 const product = new Schema({
   name: {
     type: String,

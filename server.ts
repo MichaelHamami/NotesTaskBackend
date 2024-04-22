@@ -22,8 +22,6 @@ mongoose
     console.error('Error connecting to MongoDB:', error);
   });
 
-const clients = {};
-
 app.use('/api', routes);
 app.use(errorHandlerMiddleware);
 

@@ -5,7 +5,7 @@ class ProductListController {
   async deleteProductList(id: string) {
     const deletedProductList = await ProductList.findByIdAndDelete(id);
     if (!deletedProductList) {
-      throw new Error('ProductList not found');
+      throw new ApplicationError(404, 'ProductList not found');
     }
     return deletedProductList;
   }
@@ -19,9 +19,8 @@ class ProductListController {
   async updateProductList(id: string, data: Partial<ProductListModel>) {
     const savedProductList = await ProductList.findByIdAndUpdate(id, { data }, { new: true });
     if (!savedProductList) {
-      throw new Error('ProductList not found');
+      throw new ApplicationError(404, 'ProductList not found');
     }
-    console.log('asdasd');
     return savedProductList;
   }
 
