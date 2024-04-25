@@ -4,19 +4,36 @@ import Product from './product.model';
 export type ProductListModel = {
   name?: string;
   items?: string[];
+  type?: number;
 };
 
+export enum ProductListType {
+  SHOPPING = 0,
+  HOME = 1,
+}
+
+const productListTypeValues = Object.values(ProductListType);
 const productList = new Schema({
   name: {
-    type: String,
+    type: 'string',
     required: true,
   },
   items: [
     {
       type: Schema.Types.ObjectId,
-      ref: Product,
+      ref: 'Product',
     },
   ],
+  type: {
+    type: 'number',
+    default: ProductListType.SHOPPING,
+    validate: {
+      validator: function (value) {
+        return productListTypeValues.includes(value);
+      },
+      message: (props) => `${props.value} is not a valid type value`,
+    },
+  },
 });
 
 export default model('ProductList', productList);

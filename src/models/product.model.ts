@@ -7,29 +7,36 @@ export enum UnitType {
   gal = 4,
 }
 
+const productUnitTypeValue = Object.values(UnitType);
+
 export type ProductModel = {
-  name: String;
+  name: string;
   unit_type: keyof UnitType;
-  quantity: Number;
-  current_quantity: Number;
-  category: String;
-  description: String;
+  quantity: number;
+  current_quantity: number;
+  category: string;
+  description: string;
   bought: boolean;
-  price: Number;
-  image: String;
+  price: number;
+  image: string;
 };
 
 const product = new Schema({
   name: {
-    type: String,
+    type: 'string',
     required: true,
   },
   unit_type: {
-    type: Number,
-    enum: Object.values(UnitType),
+    type: 'number',
+    validate: {
+      validator: function (value) {
+        return productUnitTypeValue.includes(value);
+      },
+      message: (props) => `${props.value} is not a valid type value`,
+    },
   },
   quantity: {
-    type: Number,
+    type: 'number',
     default: 1,
     validate: {
       validator: function (value: number) {
@@ -40,7 +47,7 @@ const product = new Schema({
     },
   },
   current_quantity: {
-    type: Number,
+    type: 'number',
     default: 0,
     validate: {
       validator: function (value: number) {
@@ -51,15 +58,15 @@ const product = new Schema({
     },
   },
   category: {
-    type: String,
+    type: 'string',
   },
-  description: String,
+  description: 'string',
   bought: {
     type: Boolean,
     default: false,
   },
-  price: Number,
-  image: String,
+  price: 'number',
+  image: 'string',
 });
 
 export default model('Product', product);

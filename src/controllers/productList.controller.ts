@@ -10,8 +10,8 @@ class ProductListController {
     return deletedProductList;
   }
 
-  async createProductList(name: string) {
-    const productList = new ProductList({ name });
+  async createProductList(name: string, type: number) {
+    const productList = new ProductList({ name, type });
     const savedProductList = await productList.save();
     return savedProductList;
   }

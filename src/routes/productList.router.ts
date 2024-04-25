@@ -15,7 +15,7 @@ router.delete('/:id', async (req, res, next) => {
 
 router.post('/', async (req: Request, res: Response, next) => {
   try {
-    const savedProductList = await productListControllerInstance.createProductList(req.body.name);
+    const savedProductList = await productListControllerInstance.createProductList(req.body.name, req.body.type);
     return res.send(savedProductList);
   } catch (error) {
     next(error);

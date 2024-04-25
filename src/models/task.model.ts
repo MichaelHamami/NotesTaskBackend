@@ -12,15 +12,15 @@ const toObjectIdStringPlugin = function (schema) {
 
 const taskSchema = new Schema({
   title: {
-    type: String,
+    type: 'string',
     required: true,
   },
-  description: String,
+  description: 'string',
   isCompleted: {
     type: Boolean,
     default: false,
   },
-  type: String,
+  type: 'string',
   endDate: Date,
   circulationTime: {
     type: Number,
