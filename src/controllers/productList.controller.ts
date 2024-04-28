@@ -17,7 +17,7 @@ class ProductListController {
   }
 
   async updateProductList(id: string, data: Partial<ProductListModel>) {
-    const savedProductList = await ProductList.findByIdAndUpdate(id, { data }, { new: true });
+    const savedProductList = await ProductList.findByIdAndUpdate(id, { name: data.name, items: data.items, type: data.type }, { new: true });
     if (!savedProductList) {
       throw new ApplicationError(404, 'ProductList not found');
     }

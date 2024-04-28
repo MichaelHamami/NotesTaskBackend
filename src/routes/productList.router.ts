@@ -22,7 +22,7 @@ router.post('/', async (req: Request, res: Response, next) => {
   }
 });
 
-router.put('/', async (req: Request, res: Response, next) => {
+router.put('/:id', async (req: Request, res: Response, next) => {
   try {
     const updatedProductList = await productListControllerInstance.updateProductList(req.params.id, req.body);
     return res.send(updatedProductList);
