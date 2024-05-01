@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import { OTHER_CATEGORY_ID } from './category.model';
 
 export enum UnitType {
   LB = 1,
@@ -58,11 +59,13 @@ const product = new Schema({
     },
   },
   category: {
-    type: 'string',
+    type: Schema.Types.ObjectId,
+    ref: 'Category',
+    default: OTHER_CATEGORY_ID,
   },
   description: 'string',
   bought: {
-    type: Boolean,
+    type: 'boolean',
     default: false,
   },
   price: 'number',

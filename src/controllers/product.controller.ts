@@ -10,8 +10,8 @@ class ProductController {
     return deletedProduct;
   }
 
-  async createProduct(name: string) {
-    const product = new Product({ name });
+  async createProduct(data: Partial<ProductModel>) {
+    const product = new Product({ name: data.name, ...data });
     const savedProduct = await product.save();
     return savedProduct;
   }
@@ -25,7 +25,7 @@ class ProductController {
   }
 
   async getProduct(id: string) {
-    const product = await Product.findOne({ _id: id });
+    const product = await Product.findOne({ _id: id }).populate('category');
     if (!product) {
       throw new ApplicationError(404, 'Product not found');
     }
@@ -33,7 +33,7 @@ class ProductController {
   }
 
   async getProducts() {
-    const products = await Product.find();
+    const products = await Product.find().populate('category');
     return products;
   }
 }
