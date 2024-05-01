@@ -22,6 +22,15 @@ router.post('/', async (req: Request, res: Response, next) => {
   }
 });
 
+router.post('/:id/add-product', async (req: Request, res: Response, next) => {
+  try {
+    const savedProductList = await productListControllerInstance.newItemToProductList(req.params.id, req.body);
+    return res.send(savedProductList);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.put('/:id', async (req: Request, res: Response, next) => {
   try {
     const updatedProductList = await productListControllerInstance.updateProductList(req.params.id, req.body);
