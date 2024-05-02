@@ -17,7 +17,7 @@ class ProductController {
   }
 
   async updateProduct(id: string, data: Partial<ProductModel>) {
-    const savedProduct = await Product.findByIdAndUpdate(id, { category: data.category, ...data }, { new: true });
+    const savedProduct = await Product.findByIdAndUpdate(id, { category: data.category, ...data }, { new: true }).populate('category');
     if (!savedProduct) {
       throw new ApplicationError(404, 'Product not found');
     }
