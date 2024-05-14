@@ -10,6 +10,41 @@ class ProductListController {
     this.productController = new ProductController();
   }
 
+  async duplicateProductList(id: string, name: string) {
+    const productList = await ProductList.findOne({ _id: id });
+    if (!productList) {
+      throw new ApplicationError(404, 'ProductList not found');
+    }
+
+    const newProductList = await this.createProductList(name, productList.type);
+    let itemsIds = [];
+    for (const item of productList.items) {
+      const itemData = await this.productController.getProduct(item.toString());
+      if (!itemData) throw new ApplicationError(404, 'Product not found');
+
+      const dataOfNewProduct = {
+        name: itemData.name,
+        unit_type: itemData.unit_type,
+        quantity: itemData.quantity,
+        current_quantity: itemData.current_quantity,
+        description: itemData.description,
+        category: itemData.category._id.toString(),
+        bought: itemData.bought,
+        price: itemData.price,
+        image: itemData.image,
+        isSystem: itemData.isSystem,
+        _id: undefined,
+      };
+
+      const newProduct = await this.productController.createProduct(dataOfNewProduct);
+      if (!newProduct) throw new ApplicationError(400, 'Product invalid data');
+
+      itemsIds.push(newProduct._id.toString());
+    }
+
+    return await this.updateProductList(newProductList._id.toString(), { items: itemsIds });
+  }
+
   async newItemToProductList(id: string, data: Partial<ProductModel>) {
     const product = await this.productController.createProduct(data);
     if (!product) throw new ApplicationError(400, 'Product invalid data');

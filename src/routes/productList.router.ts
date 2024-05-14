@@ -22,6 +22,15 @@ router.post('/', async (req: Request, res: Response, next) => {
   }
 });
 
+router.post('/:id/duplicate', async (req, res, next) => {
+  try {
+    const duplicatedProductList = await productListControllerInstance.duplicateProductList(req.params.id, req.body.name);
+    return res.send(duplicatedProductList);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post('/:id/add-product', async (req: Request, res: Response, next) => {
   try {
     const savedProductList = await productListControllerInstance.newItemToProductList(req.params.id, req.body);

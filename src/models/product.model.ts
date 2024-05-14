@@ -2,17 +2,18 @@ import { Schema, model } from 'mongoose';
 import { OTHER_CATEGORY_ID } from './category.model';
 
 export enum UnitType {
-  LB = 1,
-  PKG = 2,
-  OZ = 3,
-  gal = 4,
+  EACH = 1,
+  LB = 2,
+  PKG = 3,
+  OZ = 4,
+  gal = 5,
 }
 
 const productUnitTypeValue = Object.values(UnitType);
 
 export type ProductModel = {
   name: string;
-  unit_type: keyof UnitType;
+  unit_type: UnitType;
   quantity: number;
   current_quantity: number;
   category: string;
@@ -29,6 +30,7 @@ const product = new Schema({
   },
   unit_type: {
     type: 'number',
+    default: 1,
     validate: {
       validator: function (value) {
         return productUnitTypeValue.includes(value);
@@ -41,7 +43,6 @@ const product = new Schema({
     default: 1,
     validate: {
       validator: function (value: number) {
-        // Check if the value is an integer
         return Number.isInteger(value) && value > 0;
       },
       message: (props) => `${props.value} is not an integer.`,
@@ -52,7 +53,6 @@ const product = new Schema({
     default: 0,
     validate: {
       validator: function (value: number) {
-        // Check if the value is an integer
         return Number.isInteger(value) && value >= 0;
       },
       message: (props) => `${props.value} is not an integer.`,
@@ -68,8 +68,9 @@ const product = new Schema({
     type: 'boolean',
     default: false,
   },
-  price: 'number',
+  price: { type: 'number', default: 0 },
   image: 'string',
+  isSystem: { type: 'boolean', default: false },
 });
 
 export default model('Product', product);
