@@ -1,9 +1,9 @@
 import { Schema, model } from 'mongoose';
-import Product from './product.model';
+import { ProductModel } from './product.model';
 
 export type ProductListModel = {
   name?: string;
-  items?: string[];
+  items?: string[] | ProductModel[];
   type?: number;
 };
 

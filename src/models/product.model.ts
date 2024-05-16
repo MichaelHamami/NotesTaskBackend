@@ -21,6 +21,7 @@ export type ProductModel = {
   bought: boolean;
   price: number;
   image: string;
+  isSystem: boolean;
 };
 
 const product = new Schema({

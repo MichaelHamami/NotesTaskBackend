@@ -11,7 +11,7 @@ class ProductListController {
   }
 
   async duplicateProductList(id: string, name: string) {
-    const productList = await ProductList.findOne({ _id: id });
+    const productList = (await ProductList.findOne({ _id: id }).populate('items').lean()) as ProductListModel;
     if (!productList) {
       throw new ApplicationError(404, 'ProductList not found');
     }
@@ -19,20 +19,12 @@ class ProductListController {
     const newProductList = await this.createProductList(name, productList.type);
     let itemsIds = [];
     for (const item of productList.items) {
-      const itemData = await this.productController.getProduct(item.toString());
+      const itemData = item as ProductModel;
       if (!itemData) throw new ApplicationError(404, 'Product not found');
 
       const dataOfNewProduct = {
-        name: itemData.name,
-        unit_type: itemData.unit_type,
-        quantity: itemData.quantity,
-        current_quantity: itemData.current_quantity,
-        description: itemData.description,
-        category: itemData.category._id.toString(),
-        bought: itemData.bought,
-        price: itemData.price,
-        image: itemData.image,
-        isSystem: itemData.isSystem,
+        ...itemData,
+        category: itemData.category.toString(),
         _id: undefined,
       };
 
