@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import { Schema, model } from 'mongoose';
 
 export const OTHER_CATEGORY_ID = '663146e3104405840ad156be';
 
@@ -9,7 +9,7 @@ export type CategoryModel = {
   color: string;
 };
 
-const categorySchema = new mongoose.Schema({
+const categorySchema = new Schema({
   name: {
     type: 'string',
     required: true,
@@ -25,6 +25,10 @@ const categorySchema = new mongoose.Schema({
   image: {
     type: 'string',
   },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
 });
 
-export default mongoose.model('Category', categorySchema);
+export default model('Category', categorySchema);

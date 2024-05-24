@@ -72,6 +72,10 @@ const product = new Schema({
   price: { type: 'number', default: 0 },
   image: 'string',
   isSystem: { type: 'boolean', default: false },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
 });
 
 export default model('Product', product);

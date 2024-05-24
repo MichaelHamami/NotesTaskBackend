@@ -34,6 +34,11 @@ const productList = new Schema({
       message: (props) => `${props.value} is not a valid type value`,
     },
   },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
 });
 
 export default model('ProductList', productList);

@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import routes from './src/routes';
 import http from 'http';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { errorHandlerMiddleware } from './src/middlewares/errorHandler';
 require('dotenv').config();
 
@@ -12,6 +13,7 @@ const server = http.createServer(app);
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 mongoose
   .connect(process.env.CONNECTION_URL!)

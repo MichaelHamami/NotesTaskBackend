@@ -5,14 +5,15 @@ import noteRoutes from './note.router';
 import productListRoutes from './productList.router';
 import productRoutes from './product.router';
 import categoryRoutes from './category.router';
+import { authMiddleware } from '../middlewares/auth.middleware';
 
 const router = express.Router();
 
-router.use('/note', noteRoutes);
-router.use('/task', taskRoutes);
+router.use('/note', authMiddleware, noteRoutes);
+router.use('/task', authMiddleware, taskRoutes);
 router.use('/auth', authRoutes);
-router.use('/product-list', productListRoutes);
-router.use('/product', productRoutes);
-router.use('/category', categoryRoutes);
+router.use('/product-list', authMiddleware, productListRoutes);
+router.use('/product', authMiddleware, productRoutes);
+router.use('/category', authMiddleware, categoryRoutes);
 
 export default router;
