@@ -1,11 +1,11 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
-import routes from './src/routes';
+import routes from './routes';
 import http from 'http';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { errorHandlerMiddleware } from './src/middlewares/errorHandler';
+import { errorHandlerMiddleware } from './middlewares/errorHandler';
 require('dotenv').config();
 
 const app = express();
