@@ -1,6 +1,6 @@
 import { ApplicationError } from '../middlewares/errorHandler';
 import { ProductModel } from '../models/product.model';
-import ProductList, { ProductListModel } from '../models/productList.model';
+import ProductList, { ProductListModel, ProductListType } from '../models/productList.model';
 import { UserSession } from '../models/user.model';
 import ProductController from './product.controller';
 
@@ -9,6 +9,42 @@ class ProductListController {
 
   constructor() {
     this.productController = new ProductController();
+  }
+
+  async createRelativeShoppingList(user: UserSession, id: string, name: string) {
+    if (!name) throw new ApplicationError(400, 'ProductList name invalid');
+
+    const productList = (await ProductList.findOne({ _id: id }).populate('items').lean()) as ProductListModel;
+    if (!productList) {
+      throw new ApplicationError(404, 'ProductList not found');
+    }
+
+    if (productList.type !== ProductListType.HOME) {
+      throw new ApplicationError(400, 'ProductList type invalid');
+    }
+
+    const newProductList = await this.createProductList(user, name, ProductListType.SHOPPING);
+    let itemsIds = [];
+    for (const item of productList.items) {
+      const itemData = item as ProductModel;
+      if (!itemData) throw new ApplicationError(404, 'Product not found');
+
+      if (itemData.quantity <= 0 && itemData.current_quantity >= 0 && itemData.current_quantity < itemData.quantity) continue;
+
+      const dataOfNewProduct = {
+        ...itemData,
+        quantity: itemData.quantity - itemData.current_quantity,
+        category: itemData.category.toString(),
+        _id: undefined,
+      };
+
+      const newProduct = await this.productController.createProduct(dataOfNewProduct);
+      if (!newProduct) continue;
+
+      itemsIds.push(newProduct._id.toString());
+    }
+
+    return await this.updateProductList(user, newProductList._id.toString(), { items: itemsIds });
   }
 
   async deleteItems(user: UserSession, id: string, itemIds: string[]) {
@@ -86,6 +122,8 @@ class ProductListController {
   }
 
   async createProductList(user: UserSession, name: string, type: number) {
+    if (!name) throw new ApplicationError(400, 'ProductList name invalid');
+
     const productList = new ProductList({ name, type, user: user.userId });
     const savedProductList = await productList.save();
     return savedProductList;
