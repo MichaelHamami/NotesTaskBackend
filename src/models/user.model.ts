@@ -6,6 +6,11 @@ export type UserSession = {
   email: string;
 };
 
+export type UserModel = {
+  name: string;
+  email: string;
+};
+
 const UserSchema = new mongoose.Schema({
   name: {
     type: 'string',
