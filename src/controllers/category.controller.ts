@@ -1,31 +1,32 @@
 import { ApplicationError } from '../middlewares/errorHandler';
 import Category, { CategoryModel } from '../models/category.model';
+import { UserSession } from '../models/user.model';
 
 class CategoryController {
-  async deleteCategory(id: string) {
-    const deletedCategory = await Category.findByIdAndDelete(id);
+  async deleteCategory(user: UserSession, id: string) {
+    const deletedCategory = await Category.findOneAndDelete({ _id: id, user: user.userId });
     if (!deletedCategory) {
       throw new ApplicationError(404, 'Category not found');
     }
     return deletedCategory;
   }
 
-  async createCategory(data: Partial<CategoryModel>) {
-    const category = new Category({ name: data.name, ...data });
+  async createCategory(user: UserSession, data: Partial<CategoryModel>) {
+    const category = new Category({ name: data.name, ...data, user: user.userId });
     const savedCategory = await category.save();
     return savedCategory;
   }
 
-  async updateCategory(id: string, data: Partial<CategoryModel>) {
-    const savedCategory = await Category.findByIdAndUpdate(id, { data }, { new: true });
+  async updateCategory(user: UserSession, id: string, data: Partial<CategoryModel>) {
+    const savedCategory = await Category.findOneAndUpdate({ _id: id, user: user.userId }, { data }, { new: true });
     if (!savedCategory) {
       throw new ApplicationError(404, 'Category not found');
     }
     return savedCategory;
   }
 
-  async getCategory(id: string) {
-    const category = await Category.findOne({ _id: id });
+  async getCategory(user: UserSession, id: string) {
+    const category = await Category.findOne({ _id: id, user: user.userId });
     if (!category) {
       throw new ApplicationError(404, 'Category not found');
     }

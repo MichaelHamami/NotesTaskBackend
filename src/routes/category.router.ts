@@ -6,7 +6,7 @@ const categoryControllerInstance = new CategoryController();
 
 router.delete('/:id', async (req, res, next) => {
   try {
-    const deletedCategory = await categoryControllerInstance.deleteCategory(req.params.id);
+    const deletedCategory = await categoryControllerInstance.deleteCategory(req.user, req.params.id);
     return res.send(deletedCategory);
   } catch (error) {
     next(error);
@@ -15,7 +15,7 @@ router.delete('/:id', async (req, res, next) => {
 
 router.post('/', async (req: Request, res: Response, next) => {
   try {
-    const savedCategory = await categoryControllerInstance.createCategory(req.body);
+    const savedCategory = await categoryControllerInstance.createCategory(req.user, req.body);
     return res.send(savedCategory);
   } catch (error) {
     next(error);
@@ -24,7 +24,7 @@ router.post('/', async (req: Request, res: Response, next) => {
 
 router.put('/id', async (req: Request, res: Response, next) => {
   try {
-    const updatedCategory = await categoryControllerInstance.updateCategory(req.params.id, req.body);
+    const updatedCategory = await categoryControllerInstance.updateCategory(req.user, req.params.id, req.body);
     return res.send(updatedCategory);
   } catch (error) {
     next(error);
@@ -42,7 +42,7 @@ router.get('/', async (req: Request, res: Response, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
-    const category = await categoryControllerInstance.getCategory(req.params.id);
+    const category = await categoryControllerInstance.getCategory(req.user, req.params.id);
     return res.send(category);
   } catch (error) {
     next(error);
