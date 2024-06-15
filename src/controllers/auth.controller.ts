@@ -1,28 +1,35 @@
 import { ApplicationError } from '../middlewares/errorHandler';
 import User from '../models/user.model';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 require('dotenv').config();
 const secretKey = process.env.JWT_SECRET_KEY;
 
 class AuthController {
-  async login(fingerPrint: string) {
-    if (!fingerPrint) throw new ApplicationError(400, 'FingerPrint is required');
+  async login(username: string, password: string) {
+    if (!username || !password) throw new ApplicationError(400, 'Username and Password is required');
 
-    const user = await User.findOne({ fingerPrint: fingerPrint }).lean();
-    if (!user) throw new ApplicationError(400, 'FingerPrint is not valid');
+    const user = await User.findOne({ username: username }).lean();
+    if (!user) throw new ApplicationError(400, 'Username or Password is not valid');
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) throw new ApplicationError(400, 'Username or Password is not valid');
 
     return this.generateAuthToken(user._id.toString());
   }
 
-  async signup(fingerPrint: string) {
-    if (!fingerPrint) throw new ApplicationError(400, 'FingerPrint is required');
+  async signup(username: string, password: string) {
+    if (!username || !password) throw new ApplicationError(400, 'Username and Password is required');
 
-    const user = await User.findOne({ fingerPrint: fingerPrint });
+    const user = await User.findOne({ username: username });
     if (user) throw new ApplicationError(400, 'User is already found');
 
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
-      fingerPrint: fingerPrint,
+      username: username,
+      password: hashedPassword,
     });
 
     const userSaved = await newUser.save();

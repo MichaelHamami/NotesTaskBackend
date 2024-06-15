@@ -9,8 +9,8 @@ const router = express.Router();
 
 router.post('/login', async (req: Request, res: Response, next) => {
   try {
-    const { fingerPrint } = req.body;
-    const token = await authControllerInstance.login(fingerPrint);
+    const { username, password } = req.body;
+    const token = await authControllerInstance.login(username, password);
 
     res.cookie(TOKEN_NAME, token, { httpOnly: true, secure: false });
     return res.json({ success: true, authToken: token });
@@ -21,8 +21,8 @@ router.post('/login', async (req: Request, res: Response, next) => {
 
 router.post('/signup', async (req: Request, res: Response, next) => {
   try {
-    const { fingerPrint } = req.body;
-    const token = await authControllerInstance.signup(fingerPrint);
+    const { username, password } = req.body;
+    const token = await authControllerInstance.signup(username, password);
 
     res.cookie(TOKEN_NAME, token, { httpOnly: true, secure: false });
     return res.json({ success: true, authToken: token });

@@ -29,6 +29,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       userId: user._id.toString(),
       name: user.name,
       email: user.email,
+      languageCode: user.languageCode,
     };
 
     req.user = userData;

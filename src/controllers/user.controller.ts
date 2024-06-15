@@ -4,10 +4,13 @@ import { UserSession } from '../models/user.model';
 
 class UserController {
   async updateUser(user: UserSession, data: Partial<UserModel>) {
-    const savedUser = await User.findOneAndUpdate({ _id: user.userId }, { data }, { new: true });
+    const savedUser = await User.findOneAndUpdate({ _id: user.userId }, { ...data }, { new: true }).lean();
     if (!savedUser) {
       throw new ApplicationError(404, 'User not found');
     }
+    savedUser.password = undefined;
+    savedUser.username = undefined;
+    savedUser.fingerPrint = undefined;
     return savedUser;
   }
 
@@ -18,6 +21,7 @@ class UserController {
     }
 
     userInfo.password = undefined;
+    userInfo.username = undefined;
     userInfo.fingerPrint = undefined;
     return userInfo;
   }

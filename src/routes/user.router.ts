@@ -7,7 +7,7 @@ const userControllerInstance = new UserController();
 
 router.put('/', async (req: Request, res: Response, next) => {
   try {
-    if (req.body?.fingerPrint || req.body?.password || req.body?._id || req.body?.email) {
+    if (req.body?.fingerPrint || req.body?.password || req.body?._id || req.body?.email || req.body?.username) {
       throw new ApplicationError(400, 'Invalid request');
     }
     const updatedUser = await userControllerInstance.updateUser(req.user, req.body);

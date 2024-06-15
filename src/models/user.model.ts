@@ -2,13 +2,15 @@ import mongoose from 'mongoose';
 
 export type UserSession = {
   userId: string;
-  name: string;
-  email: string;
+  name?: string;
+  email?: string;
+  languageCode?: number;
 };
 
 export type UserModel = {
   name: string;
   email: string;
+  languageCode: number;
 };
 
 const UserSchema = new mongoose.Schema({
@@ -20,10 +22,18 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: 'string',
+    required: true,
+  },
+  username: {
+    type: 'string',
+    required: true,
+    unique: true,
   },
   fingerPrint: {
     type: 'string',
-    required: true,
+  },
+  languageCode: {
+    type: 'number',
   },
 });
 
