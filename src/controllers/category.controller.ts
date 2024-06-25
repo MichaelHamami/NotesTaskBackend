@@ -18,7 +18,7 @@ class CategoryController {
   }
 
   async updateCategory(user: UserSession, id: string, data: Partial<CategoryModel>) {
-    const savedCategory = await Category.findOneAndUpdate({ _id: id, user: user.userId }, { data }, { new: true });
+    const savedCategory = await Category.findOneAndUpdate({ _id: id, user: user.userId }, { data, isSystem: false }, { new: true });
     if (!savedCategory) {
       throw new ApplicationError(404, 'Category not found');
     }
@@ -33,8 +33,8 @@ class CategoryController {
     return category;
   }
 
-  async getCategories() {
-    const categories = await Category.find();
+  async getCategories(user: UserSession) {
+    const categories = await Category.find({ user: user.userId });
     return categories;
   }
 }

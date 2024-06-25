@@ -33,7 +33,7 @@ router.put('/id', async (req: Request, res: Response, next) => {
 
 router.get('/', async (req: Request, res: Response, next) => {
   try {
-    const categories = await categoryControllerInstance.getCategories();
+    const categories = await categoryControllerInstance.getCategories(req.user);
     return res.send(categories);
   } catch (error) {
     next(error);

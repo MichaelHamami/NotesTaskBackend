@@ -7,6 +7,8 @@ import productRoutes from './product.router';
 import categoryRoutes from './category.router';
 import userRoutes from './user.router';
 import { authMiddleware } from '../middlewares/auth.middleware';
+import { adminAuthMiddleware } from '../middlewares/adminAuth.middleware';
+import adminRoutes from './admin.router';
 
 const router = express.Router();
 
@@ -17,5 +19,6 @@ router.use('/product-list', authMiddleware, productListRoutes);
 router.use('/product', authMiddleware, productRoutes);
 router.use('/category', authMiddleware, categoryRoutes);
 router.use('/user', authMiddleware, userRoutes);
+router.use('/admin', adminAuthMiddleware, adminRoutes);
 
 export default router;
