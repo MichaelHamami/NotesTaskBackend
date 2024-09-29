@@ -1,4 +1,4 @@
-import Note from '../models/note.model';
+import Note, { NoteModel } from '../models/note.model';
 import Task from '../models/task.model';
 
 class NoteController {
@@ -10,18 +10,23 @@ class NoteController {
     return deletedNote;
   }
 
-  async createNote(content: string) {
-    const note = new Note({ content });
+  async createNote(data: Partial<NoteModel>) {
+    const title = this.handleTitle(data);
+    const note = new Note({ ...data, title, modifiedOn: new Date() });
     const savedNote = await note.save(); // Save the note and get the returned value
     return savedNote;
   }
 
-  async updateNote(id: string, content: string) {
+  async updateNote(id: string, data: Partial<NoteModel>) {
     const note = await Note.findOne({ _id: id });
     if (!note) {
       throw new Error('Note not found');
     }
-    note.content = content;
+
+    note.title = this.handleTitle(data);
+    note.content = data.content;
+    note.modifiedOn = new Date();
+    note.color = data.color || note.color;
     const savedNote = await note.save();
     return savedNote;
   }
@@ -71,6 +76,15 @@ class NoteController {
     } catch (error) {
       return matchedString;
     }
+  }
+  handleTitle(data: Partial<NoteModel>) {
+    let title = data.title;
+    if (title.length <= 0) title = data.content.substring(0, 10);
+
+    if (title.length <= 0) {
+      title = new Date().toLocaleDateString().split('T')[0];
+    }
+    return title;
   }
 }
 export default NoteController;
