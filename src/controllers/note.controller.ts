@@ -30,6 +30,7 @@ class NoteController {
     note.modifiedOn = new Date();
     note.color = data.color || note.color;
     const savedNote = await note.save();
+    savedNote.content = await this.handleComponentsOnContent(savedNote.content);
     return savedNote;
   }
 

@@ -12,7 +12,13 @@ const noteSchema = new mongoose.Schema({
     type: 'string',
   },
   title: { type: 'string', required: true },
-  color: { type: 'string', default: '#000000' },
+  color: {
+    type: 'string',
+    default: '#000000',
+    validate: function (value: string) {
+      return /^#([0-9A-Fa-f]{3}){1,2}$/.test(value);
+    },
+  },
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
