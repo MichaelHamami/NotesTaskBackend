@@ -14,7 +14,7 @@ const noteSchema = new mongoose.Schema({
   title: { type: 'string', required: true },
   color: {
     type: 'string',
-    default: '#000000',
+    default: '#9f9b73',
     validate: function (value: string) {
       return /^#([0-9A-Fa-f]{3}){1,2}$/.test(value);
     },

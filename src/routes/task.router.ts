@@ -1,28 +1,41 @@
 import express, { Request, Response } from 'express';
 import TaskController from '../controllers/task.controller';
+import NoteController from '../controllers/note.controller';
 
 const router = express.Router();
-const taskControllerinstance = new TaskController();
+const taskControllerInstance = new TaskController();
+const noteControllerInstance = new NoteController();
 
-// Create a task
 router.post('/', async (req: Request, res: Response, next) => {
   try {
-    const task = await taskControllerinstance.createTask(req.body);
+    const task = await taskControllerInstance.createTask(req.user, req.body);
     return res.send(task);
   } catch (error) {
     next(error);
   }
 });
 
-// Read all tasks
 router.get('/', async (req: Request, res: Response, next) => {
   try {
-    const tasks = await taskControllerinstance.getAllTasks();
+    const tasks = await taskControllerInstance.getAllTasks(req.user);
     return res.send(tasks);
   } catch (error) {
     next(error);
   }
 });
 
-// setInterval(taskControllerinstance.handleEndedTasks,   60 * 1000); // Run every minute
+router.put('/:id', async (req: Request, res: Response, next) => {
+  try {
+    const task = await taskControllerInstance.updateTask(req.user, req.params.id, req.body);
+    const noteOfUpdatedTask = await noteControllerInstance.getNote(req.user, task.note);
+    return res.send(noteOfUpdatedTask);
+  } catch (error) {
+    next(error);
+  }
+});
+
+const millisecondsToSeconds = 1000;
+const secondsToMinute = 60;
+
+setInterval(taskControllerInstance.handleEndedTasks, secondsToMinute * millisecondsToSeconds * 5);
 export default router;
