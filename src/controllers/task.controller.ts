@@ -1,6 +1,8 @@
 import { ApplicationError } from '../middlewares/errorHandler';
 import { TaskModel, TaskType } from '../models/task.model';
 import { UserSession } from '../models/user.model';
+import Note from '../models/note.model';
+import NoteController from './note.controller';
 
 const Task = require('../models/task.model').default;
 
@@ -25,6 +27,34 @@ class TaskController {
       throw new ApplicationError(404, 'Task not found');
     }
     return updatedTask;
+  }
+
+  async deleteTaskOnNote(user: UserSession, taskId: string, noteId: string) {
+    const note = await Note.findOne({ _id: noteId, user: user.userId });
+    if (!note) {
+      throw new ApplicationError(404, 'note not found');
+    }
+    const newContent = note.content.replace(`<Task:${taskId}>`, '');
+    note.title = note.title;
+    note.content = newContent;
+    note.modifiedOn = new Date();
+    note.color = note.color;
+    const savedNote = await note.save();
+    const noteControllerInstance = new NoteController();
+    savedNote.content = await noteControllerInstance.handleComponentsOnContent(savedNote.content);
+    return savedNote;
+  }
+
+  async deleteTask(user: UserSession, taskId: string) {
+    const deletedTask = await Task.findByIdAndDelete({ _id: taskId, user: user.userId })?.lean();
+    if (!deletedTask) {
+      throw new ApplicationError(404, 'Task not found');
+    }
+    const replacedNote = await this.deleteTaskOnNote(user, taskId, deletedTask.note);
+    if (!replacedNote) {
+      throw new ApplicationError(500, 'Note did not updated');
+    }
+    return replacedNote;
   }
 
   async handleEndedTasks() {

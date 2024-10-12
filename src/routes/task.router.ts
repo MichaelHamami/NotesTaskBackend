@@ -1,10 +1,8 @@
 import express, { Request, Response } from 'express';
 import TaskController from '../controllers/task.controller';
-import NoteController from '../controllers/note.controller';
 
 const router = express.Router();
 const taskControllerInstance = new TaskController();
-const noteControllerInstance = new NoteController();
 
 router.post('/', async (req: Request, res: Response, next) => {
   try {
@@ -26,9 +24,17 @@ router.get('/', async (req: Request, res: Response, next) => {
 
 router.put('/:id', async (req: Request, res: Response, next) => {
   try {
-    const task = await taskControllerInstance.updateTask(req.user, req.params.id, req.body);
-    const noteOfUpdatedTask = await noteControllerInstance.getNote(req.user, task.note);
-    return res.send(noteOfUpdatedTask);
+    const updatedNote = await taskControllerInstance.updateTask(req.user, req.params.id, req.body);
+    return res.send(updatedNote);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.delete('/:id', async (req: Request, res: Response, next) => {
+  try {
+    const updatedNoteRelated = await taskControllerInstance.deleteTask(req.user, req.params.id);
+    return res.send(updatedNoteRelated);
   } catch (error) {
     next(error);
   }
