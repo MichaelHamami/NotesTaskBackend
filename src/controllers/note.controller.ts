@@ -56,15 +56,19 @@ class NoteController {
   }
 
   async handleComponentsOnContent(content: string) {
-    const componentRegex = /<(\w+):(\w+)>/g;
-    const matches = [...content.matchAll(componentRegex)];
-    let replacedString = content;
+    try {
+      const componentRegex = /<(\w+):(\w+)>/g;
+      const matches = [...content.matchAll(componentRegex)];
+      let replacedString = content;
 
-    for (const match of matches) {
-      const replacement = await this.getNoteReplacerStrWithComponentData(match[0], match[1], match[2]);
-      replacedString = replacedString.replace(match[0], replacement);
+      for (const match of matches) {
+        const replacement = await this.getNoteReplacerStrWithComponentData(match[0], match[1], match[2]);
+        replacedString = replacedString.replace(match[0], replacement);
+      }
+      return replacedString;
+    } catch (error) {
+      return content;
     }
-    return replacedString;
   }
 
   async getNoteReplacerStrWithComponentData(matchedString: string, componentName: string, componentId: string) {
@@ -80,6 +84,7 @@ class NoteController {
       return matchedString;
     }
   }
+
   handleTitle(data: Partial<NoteModel>) {
     let title = data.title;
     if (title?.length > 0) return title;

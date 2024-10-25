@@ -36,19 +36,8 @@ class AuthController {
     return this.generateAuthToken(userSaved._id.toString());
   }
 
-  isValidAuthToken = (authToken: string) => {
-    try {
-      console.log('authToken', authToken, secretKey);
-      const decoded = jwt.verify(authToken, secretKey);
-      if (typeof decoded === 'string') return !!decoded;
-      return !!decoded._id;
-    } catch (error) {
-      return false;
-    }
-  };
-
   generateAuthToken = (userId: string) => {
-    return jwt.sign({ userId }, secretKey, { expiresIn: '1h' });
+    return jwt.sign({ userId }, secretKey, { expiresIn: '24h' });
   };
 }
 
