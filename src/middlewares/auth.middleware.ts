@@ -16,7 +16,7 @@ const secretKey = process.env.JWT_SECRET_KEY;
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const tokenCookie = req.cookies?.[TOKEN_NAME];
+    const tokenCookie = req.cookies?.[TOKEN_NAME] || req.headers?.[TOKEN_NAME];
     if (!tokenCookie) return res.status(401).send('Unauthorized');
     const tokenData = jwt.verify(tokenCookie, secretKey);
     if (!tokenData) return res.status(401).send('Invalid token');
