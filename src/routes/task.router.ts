@@ -43,8 +43,4 @@ router.delete('/:id', async (req: Request, res: Response, next) => {
   }
 });
 
-const millisecondsToSeconds = 1000;
-const secondsToMinute = 60;
-
-setInterval(taskControllerInstance.handleEndedTasks, secondsToMinute * millisecondsToSeconds * 5);
 export default router;
