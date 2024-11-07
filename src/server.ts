@@ -7,7 +7,9 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { errorHandlerMiddleware } from './middlewares/errorHandler';
 import cron from 'node-cron';
-import axios from 'axios';
+import TaskController from './controllers/task.controller';
+
+const taskControllerInstance = new TaskController();
 
 require('dotenv').config();
 
@@ -33,7 +35,8 @@ app.use(errorHandlerMiddleware);
 
 cron.schedule('*/15 * * * *', async () => {
   try {
-    const response = await axios.post(`${process.env.SERVER_URL}:${port}/api/public/handle-tasks`);
+    console.log('cron job called');
+    taskControllerInstance.handleEndedTasks();
   } catch (error) {
     console.error('Error calling /self-trigger:', error.message);
   }

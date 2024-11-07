@@ -27,7 +27,7 @@ router.get('/', async (req: Request, res: Response, next) => {
 router.put('/:id', async (req: Request, res: Response, next) => {
   try {
     const task = await taskControllerInstance.updateTask(req.user, req.params.id, req.body);
-    const noteWithUpdatedTask = await noteControllerInstance.getNote(req.user, task.note);
+    const noteWithUpdatedTask = await noteControllerInstance.getNote(req.user, task.note.toString());
     return res.send(noteWithUpdatedTask);
   } catch (error) {
     next(error);

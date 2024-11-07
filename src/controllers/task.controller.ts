@@ -3,8 +3,7 @@ import { TaskModel, TaskType } from '../models/task.model';
 import { UserSession } from '../models/user.model';
 import Note from '../models/note.model';
 import NoteController from './note.controller';
-
-const Task = require('../models/task.model').default;
+import Task from '../models/task.model';
 
 class TaskController {
   async createTask(user: UserSession, taskInput: TaskModel) {
@@ -50,7 +49,7 @@ class TaskController {
     if (!deletedTask) {
       throw new ApplicationError(404, 'Task not found');
     }
-    const replacedNote = await this.deleteTaskOnNote(user, taskId, deletedTask.note);
+    const replacedNote = await this.deleteTaskOnNote(user, taskId, deletedTask.note.toString());
     if (!replacedNote) {
       throw new ApplicationError(500, 'Note did not updated');
     }
