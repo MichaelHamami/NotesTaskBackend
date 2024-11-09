@@ -21,11 +21,30 @@ export type TaskModel = {
   isCompleted: boolean;
   type: TaskType;
   endDate: Date;
-  circulationTime: number;
+  circulationTime: circulationTime;
   note: string;
 };
 
+export type circulationTime = IntervalTimes | null;
+
+export type IntervalTimes = {
+  years: number;
+  months: number;
+  days: number;
+  minutes: number;
+};
+
 const taskTypeValues = Object.values(TaskType);
+
+const IntervalTimesSchema = new Schema(
+  {
+    years: { type: Number, default: 0 },
+    months: { type: Number, default: 0 },
+    days: { type: Number, default: 0 },
+    minutes: { type: Number, default: 0 },
+  },
+  { _id: false }
+);
 
 const taskSchema = new Schema({
   title: {
@@ -49,8 +68,8 @@ const taskSchema = new Schema({
   },
   endDate: Date,
   circulationTime: {
-    type: Number,
-    default: 0,
+    type: IntervalTimesSchema,
+    default: null,
   },
   note: {
     type: Schema.Types.ObjectId,
