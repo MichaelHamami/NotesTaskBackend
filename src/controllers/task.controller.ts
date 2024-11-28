@@ -80,8 +80,8 @@ class TaskController {
         circulationTime: { $ne: null },
       });
 
-      await Promise.all(
-        tasksToUpdate.map(async (task: any) => {
+      for await (const task of tasksToUpdate) {
+        try {
           console.log('try to update Task:  ', task._id);
           const currentEndDate = new Date(task.endDate);
           const circulationTime = task.circulationTime;
@@ -92,7 +92,7 @@ class TaskController {
           const now = new Date();
           let isNewEndDateIsValid = newEndDate > now;
 
-          while (!isNewEndDateIsValid && counter < 6) {
+          while (!isNewEndDateIsValid && counter < 100) {
             counter++;
             newEndDate = this.calculateNewEndDate(currentEndDate, circulationTime, counter);
             isNewEndDateIsValid = newEndDate > now;
@@ -103,8 +103,10 @@ class TaskController {
           }
 
           await Task.updateOne({ _id: task._id }, { $set: { isCompleted: false, endDate: newEndDate } });
-        })
-      );
+        } catch (error) {
+          console.error('Error updating task:', error);
+        }
+      }
     } catch (error) {
       console.error('Error updating tasks:', error);
     }
