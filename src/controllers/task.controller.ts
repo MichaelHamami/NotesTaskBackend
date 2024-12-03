@@ -1,5 +1,5 @@
 import { ApplicationError } from '../middlewares/errorHandler';
-import { IntervalTimes, TaskModel, TaskType } from '../models/task.model';
+import { IntervalTimes, TaskModel, TaskType, circulationTime } from '../models/task.model';
 import { UserSession } from '../models/user.model';
 import Note from '../models/note.model';
 import NoteController from './note.controller';
@@ -21,9 +21,22 @@ class TaskController {
   }
 
   async updateTask(user: UserSession, taskId: string, taskInput: TaskModel) {
+    const isUpdatingIsCompleted = taskInput.isCompleted ?? false;
+    const task = await Task.findOne({ user: user.userId, _id: taskId }).lean();
+    if (!task) {
+      throw new ApplicationError(404, 'Task not found');
+    }
+
+    if (isUpdatingIsCompleted && taskInput.isCompleted === true && !taskInput.endDate) {
+      const currentEndDate = new Date(task.endDate);
+      const circulationTime = task.circulationTime;
+      const nextEndDate = this.calculateNextEndDateByCircularTime(currentEndDate, circulationTime);
+      taskInput.endDate = nextEndDate;
+    }
+
     const updatedTask = await Task.findOneAndUpdate({ _id: taskId, user: user.userId }, { ...taskInput }, { new: true }).lean();
     if (!updatedTask) {
-      throw new ApplicationError(404, 'Task not found');
+      throw new ApplicationError(400, 'Failed to update Task');
     }
     return updatedTask;
   }
@@ -56,6 +69,26 @@ class TaskController {
     return replacedNote;
   }
 
+  private calculateNextEndDateByCircularTime(currentEndDate: Date, circulationTime: circulationTime): Date {
+    const now = new Date();
+    if (currentEndDate > now) return currentEndDate;
+
+    let counter = 1;
+    let newEndDate = this.calculateNewEndDate(currentEndDate, circulationTime, counter);
+    let isNewEndDateIsValid = newEndDate > now;
+
+    while (!isNewEndDateIsValid && counter < 100) {
+      counter++;
+      newEndDate = this.calculateNewEndDate(currentEndDate, circulationTime, counter);
+      isNewEndDateIsValid = newEndDate > now;
+    }
+
+    if (!isNewEndDateIsValid) {
+      newEndDate = this.calculateNewEndDate(now, circulationTime);
+    }
+    return newEndDate;
+  }
+
   // Helper function to calculate new end date based on circulationTime with an optional multiplier
   private calculateNewEndDate(startDate: Date, circulationTime: IntervalTimes, multiplier = 1): Date {
     const { years = 0, months = 0, days = 0, minutes = 0 } = circulationTime;
@@ -86,23 +119,9 @@ class TaskController {
           const currentEndDate = new Date(task.endDate);
           const circulationTime = task.circulationTime;
 
-          let counter = 1;
-          let newEndDate = this.calculateNewEndDate(currentEndDate, circulationTime, counter);
+          const nextEndDate = this.calculateNextEndDateByCircularTime(currentEndDate, circulationTime);
 
-          const now = new Date();
-          let isNewEndDateIsValid = newEndDate > now;
-
-          while (!isNewEndDateIsValid && counter < 100) {
-            counter++;
-            newEndDate = this.calculateNewEndDate(currentEndDate, circulationTime, counter);
-            isNewEndDateIsValid = newEndDate > now;
-          }
-
-          if (!isNewEndDateIsValid) {
-            newEndDate = this.calculateNewEndDate(now, circulationTime);
-          }
-
-          await Task.updateOne({ _id: task._id }, { $set: { isCompleted: false, endDate: newEndDate } });
+          await Task.updateOne({ _id: task._id }, { $set: { isCompleted: false, endDate: nextEndDate } });
         } catch (error) {
           console.error('Error updating task:', error);
         }
