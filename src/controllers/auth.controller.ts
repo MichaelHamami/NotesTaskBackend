@@ -37,7 +37,7 @@ class AuthController {
   }
 
   generateAuthToken = (userId: string) => {
-    return jwt.sign({ userId }, secretKey, { expiresIn: '24h' });
+    return jwt.sign({ userId }, secretKey, { expiresIn: '7d' });
   };
 }
 
