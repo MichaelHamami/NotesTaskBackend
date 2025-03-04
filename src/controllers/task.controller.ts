@@ -21,15 +21,15 @@ class TaskController {
   }
 
   async updateTask(user: UserSession, taskId: string, taskInput: TaskModel) {
-    const isUpdatingIsCompleted = taskInput.isCompleted ?? false;
     const task = await Task.findOne({ user: user.userId, _id: taskId }).lean();
     if (!task) {
       throw new ApplicationError(404, 'Task not found');
     }
 
-    if (isUpdatingIsCompleted && taskInput.isCompleted === true && !taskInput.endDate) {
+    if (this.shouldUpdateEndDate(task, taskInput)) {
       const currentEndDate = new Date(task.endDate);
       const circulationTime = task.circulationTime;
+
       const nextEndDate = this.calculateNextEndDateByCircularTime(currentEndDate, circulationTime);
       taskInput.endDate = nextEndDate;
     }
@@ -67,6 +67,19 @@ class TaskController {
       throw new ApplicationError(500, 'Note did not updated');
     }
     return replacedNote;
+  }
+
+  private shouldUpdateEndDate(task: any, taskInput: TaskModel): boolean {
+    const isUpdatingIsCompleted = taskInput.isCompleted ?? false;
+    if (!isUpdatingIsCompleted) return false;
+    if (taskInput.type === TaskType.Normal) return false;
+    if (task.type === TaskType.Normal && !taskInput.type) return false;
+
+    if (taskInput.isCompleted === false) return false;
+    if (taskInput.endDate) return false;
+    if (!task.circulationTime) return false;
+
+    return true;
   }
 
   private calculateNextEndDateByCircularTime(currentEndDate: Date, circulationTime: circulationTime): Date {
