@@ -11,6 +11,7 @@ export type UserModel = {
   name: string;
   email: string;
   languageCode: number;
+  tokenId: string;
 };
 
 const UserSchema = new mongoose.Schema({
@@ -19,6 +20,7 @@ const UserSchema = new mongoose.Schema({
   },
   email: {
     type: 'string',
+    unique: true,
   },
   password: {
     type: 'string',
@@ -29,11 +31,12 @@ const UserSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  fingerPrint: {
-    type: 'string',
-  },
   languageCode: {
     type: 'number',
+  },
+  tokenId: {
+    type: 'string',
+    unique: true,
   },
 });
 

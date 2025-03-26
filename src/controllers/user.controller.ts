@@ -10,7 +10,7 @@ class UserController {
     }
     savedUser.password = undefined;
     savedUser.username = undefined;
-    savedUser.fingerPrint = undefined;
+    savedUser.tokenId = undefined;
     return savedUser;
   }
 
@@ -22,7 +22,6 @@ class UserController {
 
     userInfo.password = undefined;
     userInfo.username = undefined;
-    userInfo.fingerPrint = undefined;
     return userInfo;
   }
 }
